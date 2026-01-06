@@ -28,12 +28,10 @@ MVPable is a comprehensive TALL (Tailwind CSS, Alpine.js, Laravel, Livewire) sta
   - Stripe checkout integration
   - Subscription plans and billing cycles
 
-- **General settings**
-  - Manage application settings (site name, description, contact info)
-  - Manage SEO settings (title, keywords, metadata)
-  - Manage analytics settings (Google Analytics, HTML snippets)
-  - File uploads for favicon and logo
-  - Stripe configuration
+- **Branding + SEO (config/branding.php)**
+  - Single source for name, tagline, description, and support contacts
+  - SEO defaults (title, description, keywords, OG, robots)
+  - Brand assets (logo, mark, favicon, OG image)
 
 - **Manage Plans**
   - brings your stripes plans to create pricing cards

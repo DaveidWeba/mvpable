@@ -2,10 +2,8 @@
 
 namespace App\Providers;
 
-use App\Filament\Pages\ManageSettings;
 use App\Models\Subscription;
 use App\Support\Branding;
-use Filament\Facades\Filament;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
@@ -27,9 +25,6 @@ class AppServiceProvider extends ServiceProvider
     {
 
         Cashier::useSubscriptionModel(Subscription::class);
-        Filament::registerPages([
-            ManageSettings::class,
-        ]);
 
         config([
             'app.name' => Branding::name(),
