@@ -1,74 +1,84 @@
-<x-app-layout title="Subscriptions">
-    <div class="text-sm breadcrumbs">
-    <ul>
-        <li><a href="{{route('dashboard')}}">{{ __('Dashboard') }}</a></li>
-        <li><a>{{ __('Subscription Plans') }}</a></li>
-    </ul>
+<x-app-layout title="Subscription Plans">
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-ink-600">Billing</p>
+            <h1 class="text-3xl font-semibold text-ink-900">Choose the plan that fits.</h1>
+        </div>
+        @if ($hasActiveSubscription)
+            <a href="{{ route('billing-portal') }}" target="_blank" class="rounded-full border border-ink-900/15 bg-white px-4 py-2 text-sm font-semibold text-ink-900">
+                Open billing portal
+            </a>
+        @endif
     </div>
 
-    <div class="py-12">
-        <div>
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                @foreach ($plans as $plan)
-                    <div class="w-full shadow-xl card bg-base-100">
-                        <div class="card-body">
-                            <h3 id="tier-{{ $plan->id }}" class="text-2xl font-bold card-title text-base-content">{{ $plan->name }}</h3>
-                            <p class="text-5xl font-bold tracking-tight text-base-content">${{ $plan->price }}<span class="text-base">/month</span></p>
-                            <p class="mt-4 text-base leading-7 text-base-content">{{ $plan->description }}</p>
-                            @if (is_array($plan->features) && count($plan->features) > 0)
-                                <ul class="mt-4 space-y-3 text-sm leading-6 text-base-content">
-                                    @foreach ($plan->features as $feature)
-                                        @if (isset($feature['feature_name']))
-                                            <li class="flex gap-x-3">
-                                                <svg class="flex-none w-5 h-6 text-primary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                {{ $feature['feature_name'] }}
-                                            </li>
-                                        @endif
-                                    @endforeach
-                                </ul>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        @foreach ($plans as $plan)
+            <div class="rounded-3xl border border-sand-200 bg-white/80 p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-semibold text-ink-900">{{ $plan->name }}</h3>
+                    @if ($currentPlan == $plan->stripe_plan_id)
+                        <span class="rounded-full bg-moss-500/15 px-3 py-1 text-xs font-semibold text-moss-500">Active</span>
+                    @endif
+                </div>
+                <p class="mt-4 text-4xl font-semibold text-ink-900">${{ $plan->price }}<span class="text-sm text-ink-600">/month</span></p>
+                <p class="mt-3 text-sm text-ink-700">{{ $plan->description }}</p>
+                @if (is_array($plan->features) && count($plan->features) > 0)
+                    <ul class="mt-4 space-y-2 text-sm text-ink-700">
+                        @foreach ($plan->features as $feature)
+                            @if (isset($feature['feature_name']))
+                                <li class="flex items-center gap-2">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-clay-500"></span>
+                                    {{ $feature['feature_name'] }}
+                                </li>
                             @endif
-                            <div class="justify-end mt-6 card-actions">
-                                @if(!$hasActiveSubscription)
-                                    <form action="{{ route('checkout') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="plan" value="{{ $plan->id }}">
-                                        <button type="submit" class="btn btn-primary">Subscribe</button>
-                                    </form>
-                                @elseif($currentPlan == $plan->stripe_plan_id)
-                                    <button class="btn btn-disabled">Current Plan</button>
-                                @else
-                                        <button class="btn btn-secondary" onclick="showSwapModal('{{ $plan->id }}', '{{ $plan->name }}', {{ $plan->price }})">
-                                            @php
-                                                $currentPlan = auth()->user()->subscription('default')->stripe_price;
-                                                $currentPlanPrice = \App\Models\Plan::where('stripe_plan_id', $currentPlan)->first()->price;
-                                            @endphp
-                                            {{ $plan->price > $currentPlanPrice ? 'Upgrade' : 'Downgrade' }}
-                                        </button>
-                                    </form>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
+                        @endforeach
+                    </ul>
+                @endif
+                <div class="mt-6">
+                    @if (! $hasActiveSubscription)
+                        <form action="{{ route('checkout') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="plan" value="{{ $plan->id }}">
+                            <button type="submit" class="w-full rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink-700">
+                                Subscribe
+                            </button>
+                        </form>
+                    @elseif ($currentPlan == $plan->stripe_plan_id)
+                        <button class="w-full cursor-not-allowed rounded-full border border-sand-200 bg-sand-100 px-4 py-2 text-sm font-semibold text-ink-600">
+                            Current plan
+                        </button>
+                    @else
+                        @php
+                            $swapLabel = $currentPlanPrice !== null
+                                ? ($plan->price > $currentPlanPrice ? 'Upgrade' : 'Downgrade')
+                                : 'Change plan';
+                        @endphp
+                        <button class="w-full rounded-full border border-ink-900/15 bg-white px-4 py-2 text-sm font-semibold text-ink-900 transition hover:border-ink-900/30" onclick="showSwapModal('{{ $plan->id }}', '{{ $plan->name }}', {{ $plan->price }})">
+                            {{ $swapLabel }}
+                        </button>
+                    @endif
+                </div>
             </div>
-        </div>
+        @endforeach
     </div>
-    <!-- Swap Confirmation Modal -->
-    <dialog id="swap_modal" class="modal modal-bottom sm:modal-middle">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold">Confirm Plan Change</h3>
-            <p class="py-4">Are you sure you want to switch to the <span id="new_plan_name"></span> plan?</p>
-            <p>New price: $<span id="new_plan_price"></span>/month</p>
-            <div class="modal-action">
+
+    <dialog id="swap_modal" class="backdrop:bg-ink-900/30">
+        <div class="mx-auto w-full max-w-md rounded-3xl border border-sand-200 bg-white p-6 shadow-xl">
+            <h3 class="text-lg font-semibold text-ink-900">Confirm plan change</h3>
+            <p class="mt-3 text-sm text-ink-700">Switch to the <span id="new_plan_name" class="font-semibold text-ink-900"></span> plan?</p>
+            <p class="mt-2 text-sm text-ink-600">New price: $<span id="new_plan_price"></span>/month</p>
+            <div class="mt-6 flex flex-wrap gap-3">
                 <form action="{{ route('swap') }}" method="POST">
                     @csrf
                     <input type="hidden" name="plan" id="new_plan_id">
-                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="submit" class="rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-white">
+                        Confirm
+                    </button>
                 </form>
                 <form method="dialog">
-                    <button class="btn">Cancel</button>
+                    <button class="rounded-full border border-ink-900/15 bg-white px-4 py-2 text-sm font-semibold text-ink-900">
+                        Cancel
+                    </button>
                 </form>
             </div>
         </div>

@@ -59,7 +59,6 @@ new class extends Component
                     name="password"
                     type="password"
                     class="block mt-1 w-3/4"
-                    style="border-color: #b8b6b6;"
                     placeholder="{{ __('Password') }}"
                 />
 

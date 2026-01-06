@@ -3,12 +3,17 @@
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ThemeController;
-use App\Http\Middleware\EnsureUserIsSubscribed;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect('/login');
-});
+Route::view('/', 'marketing.home')->name('home');
+Route::view('/features', 'marketing.features')->name('features');
+Route::view('/pricing', 'marketing.pricing')->name('pricing');
+
+Route::get('/og/default.svg', function () {
+    return response()
+        ->view('og.default')
+        ->header('Content-Type', 'image/svg+xml');
+})->name('og.default');
 
 Route::middleware(['auth'])->group(function () {   // EnsureUserIsSubscribed::class to middleware
     Route::view('/dashboard', 'dashboard')->name('dashboard');
@@ -28,6 +33,16 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/sitemap.xml', function () {
     return response()->file(public_path('sitemap.xml'));
+});
+
+Route::get('/robots.txt', function () {
+    $content = implode("\n", [
+        'User-agent: *',
+        'Allow: /',
+        'Sitemap: '.url('/sitemap.xml'),
+    ]);
+
+    return response($content)->header('Content-Type', 'text/plain');
 });
 
 Route::post('/theme/update', [ThemeController::class, 'update'])->name('theme.update');

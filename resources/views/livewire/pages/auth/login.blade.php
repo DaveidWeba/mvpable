@@ -38,7 +38,7 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="form.email" id="email" class="block mt-1 w-full" style="border-color: #d3d3d3;" type="email" name="email" required autofocus autocomplete="username" />
+            <x-text-input wire:model="form.email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
         </div>
 
@@ -46,7 +46,7 @@ new #[Layout('layouts.guest')] class extends Component
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
 
-            <x-text-input wire:model="form.password" id="password" class="block mt-1 w-full" style="border-color: #d3d3d3;"
+            <x-text-input wire:model="form.password" id="password" class="block mt-1 w-full"
                             type="password"
                             name="password"
                             required autocomplete="current-password" />
@@ -57,14 +57,14 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember" class="inline-flex items-center">
-                <input wire:model="form.remember" id="remember" type="checkbox" class="text-indigo-600 rounded border-gray-300 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="text-sm text-gray-600 ms-2">{{ __('Remember me') }}</span>
+                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-sand-200 text-ink-900 shadow-sm focus:ring-ink-900/20" name="remember">
+                <span class="ms-2 text-sm text-ink-700">{{ __('Remember me') }}</span>
             </label>
         </div>
 
         <div class="flex justify-end items-center mt-4">
             @if (Route::has('password.request'))
-                <a class="text-sm underline rounded-md focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none text-base-content hover:text-base-200" href="{{ route('password.request') }}" wire:navigate>
+                <a class="text-sm underline rounded-md text-ink-600 transition hover:text-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-900/20 focus:ring-offset-2" href="{{ route('password.request') }}" wire:navigate>
                     {{ __('Forgot your password?') }}
                 </a>
             @endif
@@ -80,9 +80,9 @@ new #[Layout('layouts.guest')] class extends Component
             wire:click="googleLogin"
             type="button"
             aria-label="Sign in with Google"
-            class="flex items-center p-0.5 pr-3 w-full bg-white rounded-md border border-button-border-light"
+            class="flex w-full items-center rounded-2xl border border-sand-200 bg-white px-1 pr-3 transition hover:border-ink-900/20"
         >
-            <div class="flex justify-center items-center w-9 h-9 bg-white rounded-l">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5">
                     <title>Sign in with Google</title>
                     <desc>Google G Logo</desc>
@@ -104,7 +104,7 @@ new #[Layout('layouts.guest')] class extends Component
                     ></path>
                 </svg>
             </div>
-            <span class="text-sm text-[#3c4043] tracking-wider flex-grow text-center">Sign in with Google</span>
+            <span class="flex-grow text-center text-sm font-medium text-ink-700">Sign in with Google</span>
         </button>
     </div>
 </div>

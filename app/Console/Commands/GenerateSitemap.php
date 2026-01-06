@@ -21,8 +21,19 @@ class GenerateSitemap extends Command
     {
         $sitemap = Sitemap::create();
 
-        // Add static pages
-        $sitemap->add(Url::create('/')->setPriority(1.0)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY));
+        $pages = [
+            ['url' => route('home'), 'priority' => 1.0],
+            ['url' => route('features'), 'priority' => 0.8],
+            ['url' => route('pricing'), 'priority' => 0.8],
+        ];
+
+        foreach ($pages as $page) {
+            $sitemap->add(
+                Url::create($page['url'])
+                    ->setPriority($page['priority'])
+                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+            );
+        }
         // Add dynamic pages
         // $results = \App\Models\Blog::all();
         // foreach ($results as $result) {

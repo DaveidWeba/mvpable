@@ -76,13 +76,13 @@ new class extends Component
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
         <div>
             <x-input-label class="label" for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="block mt-1 w-full" style="border-color: #b8b6b6;" required autofocus autocomplete="name" />
+            <x-text-input wire:model="name" id="name" name="name" type="text" class="block mt-1 w-full" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="block mt-1 w-full" style="border-color: #b8b6b6;" required autocomplete="username" />
+            <x-text-input wire:model="email" id="email" name="email" type="email" class="block mt-1 w-full" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
@@ -90,7 +90,7 @@ new class extends Component
                     <p class="mt-2 text-sm">
                         {{ __('Your email address is unverified.') }}
 
-                        <button wire:click.prevent="sendVerification" class="text-sm text-gray-600 underline rounded-md hover:text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none">
+                        <button wire:click.prevent="sendVerification" class="text-sm text-ink-600 underline rounded-md transition hover:text-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-900/20 focus:ring-offset-2">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>

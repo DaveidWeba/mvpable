@@ -2,47 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Plan;
+use App\Actions\Billing\CheckoutPlan;
+use App\Actions\Billing\GetSubscriptionSummary;
+use App\Actions\Billing\RedirectToBillingPortal;
+use App\Actions\Billing\SwapPlan;
+use App\Domains\Billing\PlanCatalog;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends Controller
 {
-    public function index()
+    public function index(Request $request, PlanCatalog $catalog, GetSubscriptionSummary $summary)
     {
-        $plans = Plan::all();
-        $user = Auth::user();
-        $currentPlan = null;
-        $hasActiveSubscription = false;
+        $plans = $catalog->all();
+        $data = $summary($request->user());
 
-        if ($user->subscribed('default')) {
-            $hasActiveSubscription = true;
-            $currentPlan = $user->subscription('default')->stripe_price;
-        }
-
-        return view('subscriptions.index', compact('plans', 'currentPlan', 'hasActiveSubscription'));
+        return view('subscriptions.index', [
+            'plans' => $plans,
+            ...$data,
+        ]);
     }
 
-    public function checkout(Request $request)
+    public function checkout(Request $request, PlanCatalog $catalog, CheckoutPlan $checkoutPlan)
     {
-        $plan = Plan::findOrFail($request->plan);
-        $checkoutSession = $request->user()->newSubscription('default', $plan->stripe_plan_id)->checkout([
-            'success_url' => route('dashboard'),
-            'cancel_url' => route('subscribe'),
-            'allow_promotion_codes' => true,
-        ]);
+        $plan = $catalog->findOrFail($request->plan);
+        $checkoutSession = $checkoutPlan($request->user(), $plan);
 
         return redirect($checkoutSession->url);
     }
 
-    public function swap(Request $request)
+    public function swap(Request $request, PlanCatalog $catalog, SwapPlan $swapPlan)
     {
-        $plan = Plan::findOrFail($request->plan);
-        $user = Auth::user();
+        $plan = $catalog->findOrFail($request->plan);
+        $user = $request->user();
 
         if ($user->subscribed('default')) {
             try {
-                $user->subscription('default')->swap($plan->stripe_plan_id);
+                $swapPlan($user, $plan);
 
                 return redirect()->route('subscribe')->with('success', 'Your subscription has been updated to '.$plan->name.'.');
             } catch (Exception $e) {
@@ -53,10 +49,8 @@ class SubscriptionController extends Controller
         return redirect()->route('subscribe')->with('error', 'You don\'t have an active subscription.');
     }
 
-    public function redirectToBillingPortal()
+    public function redirectToBillingPortal(Request $request, RedirectToBillingPortal $billingPortal)
     {
-        $user = Auth::user();
-
-        return $user->redirectToBillingPortal(route('dashboard'));
+        return $billingPortal($request->user());
     }
 }
