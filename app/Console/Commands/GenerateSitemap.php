@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -12,33 +13,43 @@ class GenerateSitemap extends Command
 
     protected $description = 'Generate the sitemap.';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    public function handle()
+    public function handle(): void
     {
         $sitemap = Sitemap::create();
+        $now = Carbon::now();
 
         $pages = [
-            ['url' => route('home'), 'priority' => 1.0],
-            ['url' => route('features'), 'priority' => 0.8],
-            ['url' => route('pricing'), 'priority' => 0.8],
+            [
+                'url' => route('home'),
+                'priority' => 1.0,
+                'changeFrequency' => Url::CHANGE_FREQUENCY_DAILY,
+                'lastModificationDate' => $now,
+            ],
+            [
+                'url' => route('features'),
+                'priority' => 0.9,
+                'changeFrequency' => Url::CHANGE_FREQUENCY_WEEKLY,
+                'lastModificationDate' => $now->subWeek(),
+            ],
+            [
+                'url' => route('pricing'),
+                'priority' => 0.9,
+                'changeFrequency' => Url::CHANGE_FREQUENCY_WEEKLY,
+                'lastModificationDate' => $now->subWeek(),
+            ],
         ];
 
         foreach ($pages as $page) {
-            $sitemap->add(
-                Url::create($page['url'])
-                    ->setPriority($page['priority'])
-                    ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-            );
+            $url = Url::create($page['url'])
+                ->setPriority($page['priority'])
+                ->setChangeFrequency($page['changeFrequency']);
+
+            if (isset($page['lastModificationDate'])) {
+                $url->setLastModificationDate($page['lastModificationDate']);
+            }
+
+            $sitemap->add($url);
         }
-        // Add dynamic pages
-        // $results = \App\Models\Blog::all();
-        // foreach ($results as $result) {
-        //     $sitemap->add(Url::create(route('result', $result->uuid))->setPriority(0.8)->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY));
-        // }
 
         $sitemap->writeToFile(public_path('sitemap.xml'));
 

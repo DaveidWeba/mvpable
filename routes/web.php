@@ -39,6 +39,12 @@ Route::get('/robots.txt', function () {
     $content = implode("\n", [
         'User-agent: *',
         'Allow: /',
+        'Disallow: /dashboard',
+        'Disallow: /settings',
+        'Disallow: /subscribe',
+        'Disallow: /billing-portal',
+        'Disallow: /auth/',
+        '',
         'Sitemap: '.url('/sitemap.xml'),
     ]);
 

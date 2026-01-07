@@ -19,10 +19,20 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <x-seo :title="$title" :description="$description" :image="$image" />
+        @php
+            $navigationItems = [
+                ['name' => 'Home', 'url' => route('home')],
+                ['name' => 'Features', 'url' => route('features')],
+                ['name' => 'Pricing', 'url' => route('pricing')],
+            ];
+            $navigationSchema = \App\Support\Seo::navigationSchema($navigationItems);
+        @endphp
+        <x-seo :title="$title" :description="$description" :image="$image" :schema="$navigationSchema" />
 
         <link rel="icon" href="{{ asset(data_get($brand, 'assets.favicon', 'favicon.ico')) }}" type="image/svg+xml">
-        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link rel="apple-touch-icon" href="{{ asset(data_get($brand, 'assets.favicon', 'favicon.ico')) }}">
+        <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+        <link rel="dns-prefetch" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=manrope:300,400,500,600,700&display=swap" rel="stylesheet" />
         <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700&display=swap" rel="stylesheet" />
 
