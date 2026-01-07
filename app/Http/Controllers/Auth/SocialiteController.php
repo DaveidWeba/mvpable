@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -18,7 +19,7 @@ class SocialiteController extends Controller
     {
         try {
             $socialUser = Socialite::driver($provider)->user();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return redirect('/login')->withErrors(['error' => 'Unable to login using '.$provider]);
         }
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\PlanResource\Pages;
+namespace App\Filament\Resources\Plans\Pages;
 
-use App\Filament\Resources\PlanResource;
+use App\Filament\Resources\Plans\PlanResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Str;
 

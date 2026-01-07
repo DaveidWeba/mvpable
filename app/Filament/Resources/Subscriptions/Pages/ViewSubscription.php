@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\SubscriptionResource\Pages;
+namespace App\Filament\Resources\Subscriptions\Pages;
 
-use App\Filament\Resources\SubscriptionResource;
-use Filament\Actions;
+use App\Filament\Resources\Subscriptions\SubscriptionResource;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewSubscription extends ViewRecord
@@ -13,7 +13,7 @@ class ViewSubscription extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            EditAction::make(),
         ];
     }
 }

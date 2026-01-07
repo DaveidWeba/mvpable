@@ -1,13 +1,16 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\Subscriptions;
 
-use App\Filament\Resources\SubscriptionResource\Pages;
+use App\Filament\Resources\Subscriptions\Pages\EditSubscription;
+use App\Filament\Resources\Subscriptions\Pages\ListSubscriptions;
 use App\Models\Subscription;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -15,28 +18,28 @@ class SubscriptionResource extends Resource
 {
     protected static ?string $model = Subscription::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-circle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('user_id')
+        return $schema
+            ->components([
+                TextInput::make('user_id')
                     ->required(),
-                Forms\Components\TextInput::make('type')
+                TextInput::make('type')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('stripe_id')
+                TextInput::make('stripe_id')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('stripe_status')
+                TextInput::make('stripe_status')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('stripe_price')
+                TextInput::make('stripe_price')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('quantity'),
-                Forms\Components\DateTimePicker::make('trial_ends_at'),
-                Forms\Components\DateTimePicker::make('ends_at'),
+                TextInput::make('quantity'),
+                DateTimePicker::make('trial_ends_at'),
+                DateTimePicker::make('ends_at'),
             ]);
     }
 
@@ -64,19 +67,19 @@ class SubscriptionResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                DeleteBulkAction::make(),
             ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSubscriptions::route('/'),
-            'edit' => Pages\EditSubscription::route('/{record}/edit'),
+            'index' => ListSubscriptions::route('/'),
+            'edit' => EditSubscription::route('/{record}/edit'),
         ];
     }
 }
